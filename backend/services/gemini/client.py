@@ -265,14 +265,22 @@ class GeminiVisionService:
             call_type="evaluate",
         )
 
+        # Clamp confidence fields to 0-1 range (Gemini sometimes returns 1-5 scale)
+        if "confidence" in raw and isinstance(raw["confidence"], (int, float)):
+            raw["confidence"] = min(max(raw["confidence"] / 5 if raw["confidence"] > 1 else raw["confidence"], 0), 1)
+        for cand in raw.get("candidates", []):
+            if "confidence" in cand and isinstance(cand["confidence"], (int, float)):
+                cand["confidence"] = min(max(cand["confidence"] / 5 if cand["confidence"] > 1 else cand["confidence"], 0), 1)
+
         try:
             return EvaluationResult(**raw)
         except ValidationError as e:
             logger.warning("Evaluation parse error, using defaults: %s", e)
             return EvaluationResult(
-                progress_made=False,
-                goal_achieved=False,
-                description="Failed to parse evaluation",
+                progress_made=raw.get("progress_made", False),
+                goal_achieved=raw.get("goal_achieved", False),
+                description=raw.get("description", "Failed to parse evaluation"),
+                friction_detected=raw.get("friction_detected", []),
                 confidence=0.3,
             )
 
@@ -474,6 +482,11 @@ class GeminiVisionService:
             else:
                 action_data["coordinates"] = None
 
+        # Clamp confidence to 0-1 (Gemini sometimes returns 1-5 scale)
+        if "confidence" in action_data and isinstance(action_data["confidence"], (int, float)):
+            v = action_data["confidence"]
+            action_data["confidence"] = min(max(v / 5 if v > 1 else v, 0), 1)
+
         # Parse candidates
         candidates_raw = action_data.get("candidates", [])
         candidates = []
@@ -483,7 +496,7 @@ class GeminiVisionService:
                 candidates.append(CandidateElement(
                     label=c["label"],
                     bbox=bbox,
-                    confidence=c.get("confidence", 0.5),
+                    confidence=min(max(c.get("confidence", 0.5) / 5 if c.get("confidence", 0.5) > 1 else c.get("confidence", 0.5), 0), 1),
                     is_chosen=c.get("is_chosen", False),
                 ))
             except Exception:

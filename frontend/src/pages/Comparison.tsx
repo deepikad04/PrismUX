@@ -85,8 +85,14 @@ export default function Comparison() {
         }),
       });
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`HTTP ${res.status}: ${text}`);
+      }
       const data = await res.json();
+      if (!data.results || data.results.length === 0) {
+        throw new Error("Comparison completed but no persona results were returned. Check backend logs.");
+      }
       setResult(data);
     } catch (err: unknown) {
       setError(

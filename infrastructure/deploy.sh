@@ -57,7 +57,7 @@ gcloud run deploy prismux-backend \
   --region="${REGION}" \
   --memory=2Gi \
   --cpu=2 \
-  --timeout=300 \
+  --timeout=900 \
   --concurrency=1 \
   --min-instances=0 \
   --max-instances=5 \
