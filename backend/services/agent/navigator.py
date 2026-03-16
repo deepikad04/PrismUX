@@ -73,6 +73,14 @@ class NavigatorAgent:
         try:
             context, page = await browser_mgr.new_session(self.url)
 
+            # Proactively dismiss cookie consent banners before navigation starts
+            try:
+                dismissed = await executor.dismiss_cookie_consent(page)
+                if dismissed:
+                    yield {"type": "thought", "phase": "perceive", "message": "Dismissed cookie consent banner"}
+            except Exception as e:
+                logger.debug("Cookie consent pre-check failed: %s", e)
+
             for step_num in range(settings.max_steps):
                 # 1. PERCEIVE + PLAN
                 yield {"type": "thought", "phase": "perceive", "message": f"Step {step_num}: Capturing screenshot and analyzing page..."}
@@ -87,6 +95,9 @@ class NavigatorAgent:
                 # Build memory context for planning
                 memory_prompt = self._build_memory_prompt()
 
+                # Run DOM extraction in parallel with Gemini vision call
+                dom_task = asyncio.create_task(self._extract_dom_elements(page))
+
                 try:
                     perception, plan = await gemini.perceive_and_plan(
                         screenshot_b64=screenshot_before,
@@ -98,8 +109,38 @@ class NavigatorAgent:
                     )
                 except Exception as e:
                     logger.error("Perceive+Plan failed: %s", e)
+                    dom_task.cancel()
                     self.status = "error"
                     break
+
+                # Fuse DOM results with vision results for better targeting
+                try:
+                    dom_elements = await dom_task
+                    if dom_elements and plan.action_type == "click" and plan.coordinates:
+                        fused_coords = self._fuse_vision_dom(
+                            plan, dom_elements,
+                            settings.screenshot_width, settings.screenshot_height,
+                        )
+                        if fused_coords and fused_coords != plan.coordinates:
+                            yield {
+                                "type": "thought",
+                                "phase": "plan",
+                                "message": f"DOM fusion: adjusted target from {plan.coordinates} to {fused_coords}",
+                                "data": {"dom_fusion": True},
+                            }
+                            plan = ActionPlan(
+                                action_type=plan.action_type,
+                                target_element=plan.target_element,
+                                coordinates=fused_coords,
+                                input_text=plan.input_text,
+                                key=plan.key,
+                                seconds=plan.seconds,
+                                reasoning=f"[DOM-fused] {plan.reasoning}",
+                                confidence=min(plan.confidence + 0.1, 1.0),
+                                candidates=plan.candidates,
+                            )
+                except Exception as e:
+                    logger.debug("DOM fusion skipped: %s", e)
 
                 # Emit thought events for perception and plan
                 elem_count = len(perception.elements)
@@ -244,6 +285,13 @@ class NavigatorAgent:
                 yield {"type": "thought", "phase": "act", "message": f"Executing {plan.action_type}..."}
                 action_result = await executor.execute(page, plan)
 
+                # 6b. COOKIE CONSENT — re-check after navigation to a new page
+                if action_result.success and page.url != current_url:
+                    try:
+                        await executor.dismiss_cookie_consent(page)
+                    except Exception:
+                        pass
+
                 # 7. ACTION VERIFICATION — compare pre/post click state
                 screenshot_after = await executor.take_screenshot(page)
                 if pre_click_state is not None and plan.coordinates:
@@ -338,6 +386,29 @@ class NavigatorAgent:
                 if stuck.is_stuck(step, screenshot_after_b64=screenshot_after):
                     recovery_plan = stuck.get_recovery_action()
                     logger.info("Recovery action: %s", recovery_plan.reasoning)
+
+                    # Before abandoning, try Gemini-powered intelligent recovery
+                    if recovery_plan.action_type == "done":
+                        yield {"type": "thought", "phase": "plan", "message": "Fixed recovery exhausted — asking Gemini for intelligent recovery..."}
+                        try:
+                            tried = [s.plan.reasoning for s in self.steps[-6:] if s.is_recovery]
+                            ai_plan = await gemini.suggest_recovery(
+                                screenshot_b64=screenshot_after,
+                                goal=self.goal,
+                                tried_actions=tried,
+                                current_url=page.url,
+                                width=settings.screenshot_width,
+                                height=settings.screenshot_height,
+                            )
+                            if ai_plan.action_type != "done":
+                                yield {"type": "thought", "phase": "plan", "message": f"AI Recovery: {ai_plan.reasoning}"}
+                                recovery_plan = ai_plan
+                                # Give one more chance — don't abandon yet
+                                stuck.recovery_level = 5  # So next stuck triggers real abandon
+                            else:
+                                logger.info("Gemini also recommends abandoning")
+                        except Exception as e:
+                            logger.warning("Gemini recovery suggestion failed: %s", e)
 
                     if recovery_plan.action_type == "done":
                         self.status = "abandoned"
@@ -609,6 +680,86 @@ class NavigatorAgent:
         except Exception as e:
             logger.debug("Grounding fallback failed: %s", e)
             return None
+
+    @staticmethod
+    async def _extract_dom_elements(page) -> list[dict]:
+        """Extract interactive DOM elements with bounding boxes for vision fusion."""
+        try:
+            return await page.evaluate("""() => {
+                const selectors = 'a, button, [role="button"], [role="link"], input, select, textarea, [tabindex], [onclick]';
+                const results = [];
+                for (const el of document.querySelectorAll(selectors)) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width < 5 || rect.height < 5) continue;
+                    if (rect.bottom < 0 || rect.top > window.innerHeight) continue;
+                    const text = (el.textContent || el.getAttribute('aria-label') || el.getAttribute('alt') || el.getAttribute('placeholder') || '').trim().substring(0, 100);
+                    if (!text && el.tagName !== 'INPUT') continue;
+                    results.push({
+                        tag: el.tagName.toLowerCase(),
+                        text: text,
+                        x: Math.round(rect.x + rect.width / 2),
+                        y: Math.round(rect.y + rect.height / 2),
+                        width: Math.round(rect.width),
+                        height: Math.round(rect.height),
+                    });
+                }
+                return results.slice(0, 50);  // Limit to top 50 elements
+            }""")
+        except Exception as e:
+            logger.debug("DOM extraction failed: %s", e)
+            return []
+
+    @staticmethod
+    def _fuse_vision_dom(
+        plan: ActionPlan,
+        dom_elements: list[dict],
+        viewport_width: int,
+        viewport_height: int,
+    ) -> tuple[int, int] | None:
+        """Cross-reference Gemini's target with DOM elements.
+
+        If Gemini picked coordinates that don't match any DOM element but the
+        target label matches a DOM element, use the DOM element's coordinates.
+        """
+        if not plan.target_element or not plan.coordinates:
+            return None
+
+        vx, vy = plan.coordinates
+        target_lower = plan.target_element.lower()
+        target_words = {w for w in target_lower.split() if len(w) > 2}
+
+        # Check if Gemini's coords already land on a matching DOM element
+        for el in dom_elements:
+            dx = abs(el["x"] - vx)
+            dy = abs(el["y"] - vy)
+            if dx < el["width"] // 2 + 10 and dy < el["height"] // 2 + 10:
+                # Vision coords land on a DOM element — already good
+                el_words = {w for w in el["text"].lower().split() if len(w) > 2}
+                if target_words & el_words:
+                    return None  # No adjustment needed
+
+        # Vision coords don't land on a matching element — search for text match in DOM
+        best_match = None
+        best_score = 0
+        for el in dom_elements:
+            el_text = el["text"].lower()
+            el_words = {w for w in el_text.split() if len(w) > 2}
+
+            # Score: word overlap + partial string match
+            overlap = len(target_words & el_words)
+            contains = 1 if (target_lower in el_text or el_text in target_lower) else 0
+            score = overlap + contains * 2
+
+            if score > best_score:
+                best_score = score
+                best_match = el
+
+        if best_match and best_score >= 2:
+            new_x = min(best_match["x"], viewport_width - 1)
+            new_y = min(best_match["y"], viewport_height - 1)
+            return (new_x, new_y)
+
+        return None
 
     def _make_step(
         self,

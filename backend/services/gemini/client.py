@@ -22,6 +22,7 @@ from schemas.navigation import (
 from .prompts import (
     EVALUATE_PROMPT,
     PERCEIVE_AND_PLAN_PROMPT,
+    RECOVERY_PROMPT,
     REPAIR_PROMPT,
     REPORT_SUMMARY_PROMPT,
     build_history_summary,
@@ -165,6 +166,21 @@ REPORT_SCHEMA = {
 }
 
 
+RECOVERY_ACTION_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "action_type": {"type": "string"},
+        "target_element": {"type": "string"},
+        "coordinates": {"type": "array", "items": {"type": "integer"}},
+        "input_text": {"type": "string"},
+        "key": {"type": "string"},
+        "reasoning": {"type": "string"},
+        "confidence": {"type": "number"},
+    },
+    "required": ["action_type", "reasoning", "confidence"],
+}
+
+
 class GeminiVisionService:
     """Handles all Gemini multimodal API calls with structured output and repair retry."""
 
@@ -290,6 +306,51 @@ class GeminiVisionService:
             call_type="report_summary",
         )
 
+    async def suggest_recovery(
+        self,
+        screenshot_b64: str,
+        goal: str,
+        tried_actions: list[str],
+        current_url: str,
+        width: int = 960,
+        height: int = 540,
+    ) -> ActionPlan:
+        """Ask Gemini to visually analyze the page and suggest an intelligent recovery action."""
+        prompt = RECOVERY_PROMPT.format(
+            goal=goal,
+            tried_actions="\n".join(f"- {a}" for a in tried_actions) or "None",
+            current_url=current_url,
+            width=width,
+            height=height,
+        )
+
+        image_bytes = base64.b64decode(screenshot_b64)
+        image_part = genai_types.Part.from_bytes(data=image_bytes, mime_type="image/png")
+
+        raw = await self._call_gemini(
+            model=self.perception_model,
+            contents=[image_part, prompt],
+            schema=RECOVERY_ACTION_SCHEMA,
+            call_type="recovery",
+        )
+
+        coords = raw.get("coordinates")
+        if isinstance(coords, (list, tuple)) and len(coords) == 2:
+            coords = (int(coords[0]), int(coords[1]))
+        else:
+            coords = None
+
+        return ActionPlan(
+            action_type=raw.get("action_type", "scroll_down"),
+            target_element=raw.get("target_element"),
+            coordinates=coords,
+            input_text=raw.get("input_text"),
+            key=raw.get("key"),
+            reasoning=f"[AI Recovery] {raw.get('reasoning', 'Gemini suggested action')}",
+            confidence=raw.get("confidence", 0.5),
+            candidates=[],
+        )
+
     async def _call_gemini(
         self,
         model: str,
@@ -344,7 +405,9 @@ class GeminiVisionService:
                 logger.error("Gemini %s error (attempt %d): %s", call_type, attempt + 1, e)
 
             if attempt < self.max_retries - 1:
-                wait = 2 ** attempt
+                import random
+                wait = (2 ** attempt) + random.uniform(0, 1)  # Exponential backoff + jitter
+                logger.info("Retrying %s in %.1fs (attempt %d/%d)", call_type, wait, attempt + 2, self.max_retries)
                 await asyncio.sleep(wait)
                 # Reset contents for non-parse retries
                 contents = list(original_contents)

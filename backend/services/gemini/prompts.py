@@ -167,6 +167,41 @@ Return JSON:
 """
 
 
+RECOVERY_PROMPT = """\
+You are a web navigation agent that is STUCK. Analyze the current screenshot and suggest the best recovery action.
+
+## Goal
+{goal}
+
+## What has been tried (all failed)
+{tried_actions}
+
+## Current page URL
+{current_url}
+
+## Instructions
+The fixed recovery strategies (scroll, Escape, click outside, go back) have not worked.
+Look at the screenshot and suggest ONE specific intelligent action to unblock navigation:
+- Maybe there's a cookie banner with a specific close button
+- Maybe there's a different navigation path visible
+- Maybe a specific element needs to be clicked to proceed
+- Maybe the goal can be reached from here via a different approach
+
+Coordinates must be within {width}x{height} pixels.
+
+Return JSON:
+{{
+  "action_type": "click|type|press_key|scroll_down|scroll_up|go_back|done",
+  "target_element": "description of element to target",
+  "coordinates": [x, y] or null,
+  "input_text": "string or null",
+  "key": "string or null",
+  "reasoning": "1-line explanation of why this specific action should unblock the agent",
+  "confidence": float
+}}
+"""
+
+
 def build_history_summary(steps: list, max_steps: int = 5) -> str:
     if not steps:
         return "No previous steps."

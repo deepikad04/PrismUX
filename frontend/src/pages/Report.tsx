@@ -13,6 +13,13 @@ import {
   ChevronUp,
   Play,
   ExternalLink,
+  Navigation,
+  Eye,
+  MousePointerClick,
+  Type,
+  XCircle,
+  Gauge,
+  Accessibility,
 } from "lucide-react";
 import Layout from "../components/ui/Layout";
 import FrictionGauge from "../components/report/FrictionGauge";
@@ -20,7 +27,7 @@ import SeverityChart from "../components/report/SeverityChart";
 import StepTimeline from "../components/report/StepTimeline";
 import AccessibilityBadge from "../components/report/AccessibilityBadge";
 import AnnotatedScreenshots from "../components/report/AnnotatedScreenshots";
-import type { FrictionReport } from "../types/navigation";
+import type { FrictionReport, FrictionItem } from "../types/navigation";
 
 const SEVERITY_ORDER = ["critical", "high", "medium", "low"] as const;
 
@@ -43,6 +50,61 @@ const SEVERITY_STYLES: Record<string, { card: string; badge: string }> = {
   },
 };
 
+/* ─── Category metadata ─── */
+const CATEGORY_META: Record<string, { icon: typeof Navigation; color: string; bg: string; label: string; recommendation: string }> = {
+  navigation: {
+    icon: Navigation,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+    label: "Navigation",
+    recommendation: "Simplify site structure, add breadcrumbs, improve menu labels, and ensure clear back/forward affordances. Users should always know where they are and how to get where they need to go.",
+  },
+  contrast: {
+    icon: Eye,
+    color: "text-purple-600",
+    bg: "bg-purple-50",
+    label: "Contrast",
+    recommendation: "Increase text-to-background contrast ratios to at least 4.5:1 for normal text and 3:1 for large text (WCAG AA). Use a contrast checker tool and avoid light gray text on white backgrounds.",
+  },
+  affordance: {
+    icon: MousePointerClick,
+    color: "text-green-600",
+    bg: "bg-green-50",
+    label: "Affordance",
+    recommendation: "Make interactive elements visually distinct — use hover effects, cursor changes, underlines for links, and button-like styling for clickable items. Users shouldn't have to guess what's clickable.",
+  },
+  copy: {
+    icon: Type,
+    color: "text-amber-600",
+    bg: "bg-amber-50",
+    label: "Copy & Language",
+    recommendation: "Use plain language, avoid jargon and idioms, keep labels concise and action-oriented. Test with non-native speakers and aim for an 8th-grade reading level for public-facing content.",
+  },
+  error: {
+    icon: XCircle,
+    color: "text-red-600",
+    bg: "bg-red-50",
+    label: "Error Handling",
+    recommendation: "Show clear, specific error messages near the relevant field. Explain what went wrong and how to fix it. Never show raw error codes. Preserve user input on validation failures.",
+  },
+  performance: {
+    icon: Gauge,
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
+    label: "Performance",
+    recommendation: "Optimize page load times, lazy-load below-the-fold content, add loading indicators for async operations, and ensure perceived performance stays under 1 second for interactions.",
+  },
+  accessibility: {
+    icon: Accessibility,
+    color: "text-pink-600",
+    bg: "bg-pink-50",
+    label: "Accessibility",
+    recommendation: "Ensure all interactive elements have minimum 44x44px tap targets, add proper ARIA labels, support keyboard navigation, and test with screen readers. Follow WCAG 2.1 AA guidelines.",
+  },
+};
+
+/* ─── Helpers ─── */
+
 function getRiskLabel(score: number) {
   if (score >= 80) return { text: "Poor UX", color: "text-red-600", bg: "bg-red-50" };
   if (score >= 60) return { text: "Needs Work", color: "text-orange-600", bg: "bg-orange-50" };
@@ -50,6 +112,112 @@ function getRiskLabel(score: number) {
   if (score >= 20) return { text: "Good", color: "text-green-600", bg: "bg-green-50" };
   return { text: "Excellent", color: "text-emerald-600", bg: "bg-emerald-50" };
 }
+
+function groupByCategory(items: FrictionItem[]): Record<string, FrictionItem[]> {
+  const groups: Record<string, FrictionItem[]> = {};
+  for (const item of items) {
+    const cat = item.category;
+    if (!groups[cat]) groups[cat] = [];
+    groups[cat].push(item);
+  }
+  // Sort items within each group by severity
+  for (const cat of Object.keys(groups)) {
+    groups[cat].sort(
+      (a, b) => SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity),
+    );
+  }
+  return groups;
+}
+
+function worstSeverity(items: FrictionItem[]): string {
+  for (const sev of SEVERITY_ORDER) {
+    if (items.some((i) => i.severity === sev)) return sev;
+  }
+  return "low";
+}
+
+/* ─── Category Group Component ─── */
+
+function CategoryGroup({
+  category,
+  items,
+  defaultOpen,
+}: {
+  category: string;
+  items: FrictionItem[];
+  defaultOpen: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  const meta = CATEGORY_META[category] || CATEGORY_META.navigation;
+  const Icon = meta.icon;
+  const worst = worstSeverity(items);
+  const worstStyle = SEVERITY_STYLES[worst] || SEVERITY_STYLES.low;
+
+  return (
+    <div className="bg-white rounded-xl border border-surface-200 shadow-sm overflow-hidden">
+      {/* Header — always visible */}
+      <button
+        onClick={() => setOpen((p) => !p)}
+        className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-surface-50/50 transition-colors text-left"
+      >
+        <div className={`p-2 rounded-lg ${meta.bg}`}>
+          <Icon className={`w-4 h-4 ${meta.color}`} />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-semibold text-surface-900">{meta.label}</span>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase ${worstStyle.badge}`}>
+              {worst}
+            </span>
+          </div>
+          <span className="text-xs text-surface-500">
+            {items.length} issue{items.length !== 1 ? "s" : ""}
+          </span>
+        </div>
+        {open ? (
+          <ChevronUp className="w-4 h-4 text-surface-400 shrink-0" />
+        ) : (
+          <ChevronDown className="w-4 h-4 text-surface-400 shrink-0" />
+        )}
+      </button>
+
+      {/* Collapsible body */}
+      {open && (
+        <div className="border-t border-surface-100">
+          <div className="space-y-0 divide-y divide-surface-100">
+            {items.map((item, i) => {
+              const styles = SEVERITY_STYLES[item.severity] || SEVERITY_STYLES.low;
+              return (
+                <div key={i} className={`${styles.card} border-l-4`}>
+                  <div className="px-4 py-3">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${styles.badge}`}>
+                        {item.severity}
+                      </span>
+                      <span className="ml-auto text-[10px] text-surface-400">Step {item.evidence_step}</span>
+                    </div>
+                    <p className="text-sm text-surface-800 font-medium">{item.description}</p>
+                  </div>
+                  {item.improvement_suggestion && (
+                    <div className="px-4 py-2.5 bg-white/70 flex items-start gap-2">
+                      <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="text-[10px] font-semibold uppercase text-amber-700 tracking-wider">Fix</span>
+                        <p className="text-sm text-surface-700 mt-0.5">{item.improvement_suggestion}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ─── Main Component ─── */
 
 export default function Report() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -154,6 +322,17 @@ export default function Report() {
   const sortedFriction = [...report.friction_items].sort(
     (a, b) => SEVERITY_ORDER.indexOf(a.severity) - SEVERITY_ORDER.indexOf(b.severity),
   );
+
+  // Group by category
+  const grouped = groupByCategory(sortedFriction);
+
+  // Sort category groups: most severe first, then by count
+  const categoryOrder = Object.entries(grouped).sort(([, aItems], [, bItems]) => {
+    const aSev = SEVERITY_ORDER.indexOf(worstSeverity(aItems) as typeof SEVERITY_ORDER[number]);
+    const bSev = SEVERITY_ORDER.indexOf(worstSeverity(bItems) as typeof SEVERITY_ORDER[number]);
+    if (aSev !== bSev) return aSev - bSev;
+    return bItems.length - aItems.length;
+  });
 
   return (
     <Layout>
@@ -279,7 +458,7 @@ export default function Report() {
 
         {/* Top priorities */}
         {report.improvement_priorities.length > 0 && (
-          <div className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-xl border border-primary-200 p-5 mb-8 shadow-sm">
+          <div className="bg-gradient-to-br from-primary-50 to-purple-50 rounded-xl border border-primary-200 p-5 mb-8 shadow-sm animate-slide-up" style={{ animationDelay: "150ms" }}>
             <h2 className="text-sm font-semibold text-primary-900 mb-3 flex items-center gap-1.5">
               <TrendingUp className="w-4 h-4 text-primary-600" />
               What to Fix First
@@ -297,45 +476,29 @@ export default function Report() {
           </div>
         )}
 
-        {/* Friction items */}
+        {/* Friction items — grouped by category */}
         {sortedFriction.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-base font-semibold text-surface-900 mb-3">
+            <h2 className="text-base font-semibold text-surface-900 mb-1">
               Issues Found ({sortedFriction.length})
             </h2>
+            <p className="text-xs text-surface-500 mb-4">
+              Grouped by {categoryOrder.length} categor{categoryOrder.length === 1 ? "y" : "ies"} — click to expand
+            </p>
             <div className="space-y-3">
-              {sortedFriction.map((item, i) => {
-                const styles = SEVERITY_STYLES[item.severity] || SEVERITY_STYLES.low;
-                return (
-                  <div
-                    key={i}
-                    className={`rounded-xl overflow-hidden ${styles.card} animate-slide-up`}
-                    style={{ animationDelay: `${i * 60}ms` }}
-                  >
-                    <div className="p-4">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${styles.badge}`}>
-                          {item.severity}
-                        </span>
-                        <span className="text-xs text-surface-500 font-medium uppercase tracking-wide">
-                          {item.category}
-                        </span>
-                        <span className="ml-auto text-[10px] text-surface-400">Step {item.evidence_step}</span>
-                      </div>
-                      <p className="text-sm text-surface-800 font-medium">{item.description}</p>
-                    </div>
-                    {item.improvement_suggestion && (
-                      <div className="px-4 py-3 bg-white/70 flex items-start gap-2">
-                        <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                        <div>
-                          <span className="text-[10px] font-semibold uppercase text-amber-700 tracking-wider">Fix</span>
-                          <p className="text-sm text-surface-700 mt-0.5">{item.improvement_suggestion}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {categoryOrder.map(([cat, items], groupIdx) => (
+                <div
+                  key={cat}
+                  className="animate-slide-up"
+                  style={{ animationDelay: `${groupIdx * 80}ms` }}
+                >
+                  <CategoryGroup
+                    category={cat}
+                    items={items}
+                    defaultOpen={groupIdx === 0}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -345,6 +508,45 @@ export default function Report() {
             <CheckCircle2 className="w-10 h-10 text-green-500 mx-auto mb-2" />
             <p className="text-surface-600 font-medium">No friction points detected</p>
             <p className="text-sm text-surface-400 mt-1">The navigation flow appears smooth for this goal.</p>
+          </div>
+        )}
+
+        {/* Recommendations by category */}
+        {categoryOrder.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-base font-semibold text-surface-900 mb-4 flex items-center gap-2">
+              <Lightbulb className="w-4.5 h-4.5 text-amber-500" />
+              Recommendations
+            </h2>
+            <div className="space-y-3">
+              {categoryOrder.map(([cat, items]) => {
+                const meta = CATEGORY_META[cat] || CATEGORY_META.navigation;
+                const Icon = meta.icon;
+                return (
+                  <div
+                    key={cat}
+                    className="bg-white rounded-xl border border-surface-200 p-4 shadow-sm"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg ${meta.bg} shrink-0`}>
+                        <Icon className={`w-4 h-4 ${meta.color}`} />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-sm font-semibold text-surface-900">{meta.label}</span>
+                          <span className="text-[10px] text-surface-400">
+                            {items.length} issue{items.length !== 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <p className="text-sm text-surface-600 leading-relaxed">
+                          {meta.recommendation}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         )}
 

@@ -19,12 +19,12 @@ function PrismLogo() {
       <line x1="1" y1="16" x2="9" y2="16" stroke="white" strokeWidth="1.5" opacity="0.6" />
       <defs>
         <linearGradient id="prism-fill" x1="3" y1="24" x2="25" y2="3">
-          <stop offset="0%" stopColor="#4c6ef5" stopOpacity="0.2" />
-          <stop offset="100%" stopColor="#7c3aed" stopOpacity="0.3" />
+          <stop offset="0%" stopColor="#7c3aed" stopOpacity="0.2" />
+          <stop offset="100%" stopColor="#a78bfa" stopOpacity="0.3" />
         </linearGradient>
         <linearGradient id="prism-stroke" x1="3" y1="24" x2="25" y2="3">
-          <stop offset="0%" stopColor="#4c6ef5" />
-          <stop offset="100%" stopColor="#7c3aed" />
+          <stop offset="0%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#a78bfa" />
         </linearGradient>
       </defs>
     </svg>
@@ -38,7 +38,7 @@ const NAV_LINKS = [
 ];
 
 const TECH_BADGES = [
-  "Gemini 2.5 Flash",
+  "Gemini 2.0 Flash",
   "Google ADK",
   "Playwright",
   "React 19",

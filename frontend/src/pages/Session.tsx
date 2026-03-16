@@ -13,6 +13,8 @@ import {
   Music,
   Send,
   MessageSquare,
+  Mic,
+  MicOff,
 } from "lucide-react";
 import Layout from "../components/ui/Layout";
 import ScreenshotViewer from "../components/navigator/ScreenshotViewer";
@@ -32,23 +34,66 @@ export default function Session() {
   const [cuesOn, setCuesOn] = useState(true);
   const [hint, setHint] = useState("");
   const [hints, setHints] = useState<string[]>([]);
+  const [listening, setListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const prevStepCountRef = useRef(0);
 
-  const sendHint = useCallback(async () => {
-    const text = hint.trim();
-    if (!text || !sessionId) return;
-    setHint("");
-    setHints((prev) => [...prev, text]);
+  const sendHintText = useCallback(async (text: string) => {
+    if (!text.trim() || !sessionId) return;
+    setHints((prev) => [...prev, text.trim()]);
     try {
       await fetch(`/api/navigate/${sessionId}/hint`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hint: text }),
+        body: JSON.stringify({ hint: text.trim() }),
       });
     } catch {
       // Best-effort — agent may have already finished
     }
-  }, [hint, sessionId]);
+  }, [sessionId]);
+
+  const sendHint = useCallback(async () => {
+    const text = hint.trim();
+    if (!text) return;
+    setHint("");
+    await sendHintText(text);
+  }, [hint, sendHintText]);
+
+  // Voice input via SpeechRecognition API
+  const toggleListening = useCallback(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return;
+
+    if (listening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setListening(false);
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = "en-US";
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map((r) => r[0].transcript)
+        .join("");
+      setHint(transcript);
+
+      // Auto-send on final result
+      if (event.results[event.results.length - 1].isFinal) {
+        sendHintText(transcript);
+        setHint("");
+      }
+    };
+    recognition.onerror = () => setListening(false);
+    recognition.onend = () => setListening(false);
+
+    recognitionRef.current = recognition;
+    recognition.start();
+    setListening(true);
+  }, [listening, sendHintText]);
 
   const { speakThoughts, playStepCue, reset } = useAudioFeedback({
     narrationEnabled: narrationOn,
@@ -247,9 +292,25 @@ export default function Session() {
                     type="text"
                     value={hint}
                     onChange={(e) => setHint(e.target.value)}
-                    placeholder="Try the hamburger menu..."
-                    className="flex-1 text-xs px-3 py-2 rounded-lg border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-400"
+                    placeholder={listening ? "Listening..." : "Type or speak a hint..."}
+                    className={`flex-1 text-xs px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-primary-400 ${
+                      listening ? "border-red-400 bg-red-50/50" : "border-surface-300"
+                    }`}
                   />
+                  {(window.SpeechRecognition || window.webkitSpeechRecognition) && (
+                    <button
+                      type="button"
+                      onClick={toggleListening}
+                      className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                        listening
+                          ? "bg-red-500 text-white animate-pulse"
+                          : "bg-surface-100 text-surface-600 hover:bg-surface-200"
+                      }`}
+                      title={listening ? "Stop listening" : "Voice input"}
+                    >
+                      {listening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
                   <button
                     type="submit"
                     disabled={!hint.trim()}

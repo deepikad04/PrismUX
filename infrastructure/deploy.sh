@@ -59,8 +59,9 @@ gcloud run deploy prismux-backend \
   --cpu=2 \
   --timeout=300 \
   --concurrency=1 \
-  --min-instances=1 \
+  --min-instances=0 \
   --max-instances=5 \
+  --port=8000 \
   --allow-unauthenticated \
   --set-env-vars="GCP_PROJECT_ID=${PROJECT_ID},GCS_BUCKET_NAME=${GCS_BUCKET},BROWSER_HEADLESS=true,CORS_ORIGINS=*" \
   --set-secrets="GEMINI_API_KEY=gemini-api-key:latest" \
@@ -79,6 +80,7 @@ gcloud run deploy prismux-frontend \
   --region="${REGION}" \
   --memory=256Mi \
   --cpu=1 \
+  --port=80 \
   --allow-unauthenticated \
   --set-env-vars="BACKEND_URL=${BACKEND_URL}" \
   --project="${PROJECT_ID}"

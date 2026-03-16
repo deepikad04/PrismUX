@@ -3,16 +3,16 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --color-primary-50: #f0f4ff;
-  --color-primary-100: #dbe4ff;
-  --color-primary-200: #bac8ff;
-  --color-primary-300: #91a7ff;
-  --color-primary-400: #748ffc;
-  --color-primary-500: #5c7cfa;
-  --color-primary-600: #4c6ef5;
-  --color-primary-700: #4263eb;
-  --color-primary-800: #3b5bdb;
-  --color-primary-900: #364fc7;
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
   --color-surface-50: #f8f9fa;
   --color-surface-100: #f1f3f5;
   --color-surface-200: #e9ecef;
@@ -135,7 +135,7 @@ body {
   position: absolute;
   inset: -2px;
   border-radius: inherit;
-  background: conic-gradient(from var(--prism-angle), #4c6ef5, #7c3aed, #ec4899, #f59e0b, #10b981, #3b82f6, #4c6ef5);
+  background: conic-gradient(from var(--prism-angle), #7c3aed, #a78bfa, #ec4899, #f59e0b, #10b981, #8b5cf6, #7c3aed);
   z-index: -1;
   animation: prism-rotate 4s linear infinite;
   opacity: 0.5;

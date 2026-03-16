@@ -1,6 +1,6 @@
 import type { CandidateElement, DetectedElement } from "../../types/navigation";
 
-const CHOSEN_COLOR = "#4c6ef5";
+const CHOSEN_COLOR = "#7c3aed";
 const ALT_COLOR = "#f59f00";
 
 const ELEMENT_TYPE_COLORS: Record<string, string> = {
@@ -29,7 +29,7 @@ const SEVERITY_MARKER_COLORS: Record<string, string> = {
   critical: "#dc2626",
   high: "#ef4444",
   medium: "#f59e0b",
-  low: "#3b82f6",
+  low: "#8b5cf6",
 };
 
 interface Props {

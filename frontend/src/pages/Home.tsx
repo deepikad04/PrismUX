@@ -11,7 +11,6 @@ import {
   GitCompareArrows,
   FileText,
   Clock,
-  Layers,
 } from "lucide-react";
 import Layout from "../components/ui/Layout";
 import PersonaSelector from "../components/personas/PersonaSelector";
@@ -104,14 +103,6 @@ const FEATURES = [
   },
 ];
 
-/* ─── Stats ─── */
-const STATS = [
-  { value: "7", label: "App Pages", icon: Layers },
-  { value: "4+", label: "Personas", icon: Users },
-  { value: "7", label: "Friction Categories", icon: AlertTriangle },
-  { value: "88", label: "Tests", icon: FileText },
-];
-
 /* ─── Rotating keywords ─── */
 const KEYWORDS = [
   "navigation issues",
@@ -159,8 +150,6 @@ export default function Home() {
 
   const howItWorks = useInView();
   const features = useInView();
-  const stats = useInView();
-
   async function handleStart() {
     if (!url.trim() || !goal.trim()) return;
     setLoading(true);
@@ -188,7 +177,7 @@ export default function Home() {
     <Layout>
       {/* ═══════ SECTION 1: HERO ═══════ */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-primary-500 to-purple-700 animate-gradient" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-700 via-primary-600 to-fuchsia-700 animate-gradient" />
         <div className="absolute inset-0 bg-grid" />
         {/* Floating orbs */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-float" />
@@ -297,41 +286,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ═══════ SECTION 4: STATS ═══════ */}
-      <div ref={stats.ref} className="max-w-4xl mx-auto px-4 py-16">
-        <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 ${stats.visible ? "stagger-children" : ""}`}>
-          {STATS.map((s) => (
-            <div key={s.label} className="text-center bg-white rounded-xl border border-surface-200 p-6 hover-lift">
-              <div className="flex justify-center mb-2">
-                <s.icon className="w-5 h-5 text-primary-400" />
-              </div>
-              <div className={`text-4xl font-black text-primary-700 tabular-nums ${stats.visible ? "animate-number-pop" : "opacity-0"}`}>
-                {s.value}
-              </div>
-              <div className="text-xs text-surface-500 uppercase tracking-wider mt-1 font-medium">
-                {s.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ═══════ SECTION 5: TECH STACK ═══════ */}
-      <div className="text-center pb-12">
-        <p className="text-xs text-surface-400 uppercase tracking-widest font-medium mb-3">Powered By</p>
-        <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto px-4">
-          {["Gemini 2.5 Flash", "Google ADK", "Playwright", "React 19", "FastAPI", "Tailwind v4", "Firestore"].map((tech) => (
-            <span
-              key={tech}
-              className="px-3 py-1.5 rounded-full bg-white border border-surface-200 text-xs font-medium text-surface-600 shadow-sm"
-            >
-              {tech}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* ═══════ SECTION 6: FORM CARD ═══════ */}
+      {/* ═══════ SECTION 4: FORM CARD ═══════ */}
       <div className="max-w-2xl mx-auto px-4 pb-12">
         <div className="text-center mb-6">
           <h2 className="text-2xl font-bold text-surface-900">Try It Now</h2>
@@ -377,7 +332,7 @@ export default function Home() {
             <button
               onClick={handleStart}
               disabled={loading || !url.trim() || !goal.trim()}
-              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-600/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-primary-600 to-fuchsia-600 text-white rounded-xl font-medium text-sm hover:from-primary-700 hover:to-fuchsia-700 transition-all shadow-lg shadow-primary-600/25 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />

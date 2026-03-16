@@ -85,8 +85,10 @@ class TestIsStuck:
         detector = StuckDetector(max_identical_steps=5)  # high threshold to avoid URL/action triggers
         step1 = _make_step(url_after="https://a.com", action_type="click", target="a", page_changed=False)
         step2 = _make_step(url_after="https://b.com", action_type="click", target="b", page_changed=False)
+        step3 = _make_step(url_after="https://c.com", action_type="click", target="c", page_changed=False)
         detector.is_stuck(step1)
-        assert detector.is_stuck(step2) is True
+        detector.is_stuck(step2)
+        assert detector.is_stuck(step3) is True  # threshold is 3
 
     def test_progress_resets_detector(self):
         detector = StuckDetector(max_identical_steps=3)
@@ -103,16 +105,18 @@ class TestRecoveryEscalation:
     def test_escalating_recovery(self):
         detector = StuckDetector()
         actions = []
-        for _ in range(6):
+        for _ in range(8):
             action = detector.get_recovery_action()
             actions.append(action.action_type)
 
-        assert actions[0] == "scroll_down"
-        assert actions[1] == "press_key"
-        assert actions[2] == "click"
-        assert actions[3] == "go_back"
-        assert actions[4] == "done"
-        assert actions[5] == "done"  # stays at done
+        assert actions[0] == "scroll_down"     # level 1
+        assert actions[1] == "scroll_up"       # level 2
+        assert actions[2] == "press_key"       # level 3 (Escape)
+        assert actions[3] == "click"           # level 4 (click outside)
+        assert actions[4] == "go_back"         # level 5
+        assert actions[5] == "press_key"       # level 6 (Tab)
+        assert actions[6] == "done"            # level 7+ (abandon)
+        assert actions[7] == "done"            # stays at done
 
 
 class TestReset:

@@ -293,21 +293,21 @@ export default function Comparison() {
             <h2 className="text-base font-semibold mb-3 text-surface-900">
               Persona Results
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 stagger-children">
               {result.results.map((r) => (
                 <PersonaScorecard key={r.session_id} result={r} />
               ))}
             </div>
 
             {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-              <div className="bg-white rounded-xl border border-surface-200 p-5 shadow-sm">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 stagger-children">
+              <div className="bg-white rounded-xl border border-surface-200 p-5 shadow-sm hover-lift">
                 <h3 className="text-sm font-semibold mb-4 text-surface-700">
                   Performance Radar
                 </h3>
                 <ComparisonRadar results={result.results} />
               </div>
-              <div className="bg-white rounded-xl border border-surface-200 p-5 shadow-sm">
+              <div className="bg-white rounded-xl border border-surface-200 p-5 shadow-sm hover-lift">
                 <h3 className="text-sm font-semibold mb-4 text-surface-700">
                   Metric Comparison
                 </h3>
@@ -316,7 +316,7 @@ export default function Comparison() {
             </div>
 
             {/* Friction heatmap */}
-            <div className="bg-white rounded-xl border border-surface-200 p-5 mb-6 shadow-sm">
+            <div className="bg-white rounded-xl border border-surface-200 p-5 mb-6 shadow-sm hover-lift animate-slide-up" style={{ animationDelay: "200ms" }}>
               <h3 className="text-sm font-semibold mb-4 text-surface-700">
                 Friction by Category
               </h3>
