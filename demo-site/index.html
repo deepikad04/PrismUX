@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CloudSync Pro — Friction Demo</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- NAVIGATION — deliberately small, low-contrast links -->
+  <nav class="nav">
+    <div class="nav-brand">CloudSync Pro</div>
+    <div class="nav-links">
+      <a href="#home" class="nav-link">Home</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
+      <a href="#about" class="nav-link">About</a>
+      <a href="#signup" class="nav-link">Sign Up</a>
+    </div>
+  </nav>
+
+  <!-- ===== HOME SECTION ===== -->
+  <section id="home" class="section hero">
+    <h1 class="hero-title">The Future of Cloud Collaboration</h1>
+    <p class="hero-subtitle">Sync. Share. Succeed. Transform your workflow with AI-powered cloud tools that adapt to your team's unique needs.</p>
+
+    <!-- Friction: 3 competing CTAs with unclear hierarchy -->
+    <div class="cta-group">
+      <button class="btn btn-outline" onclick="location.hash='about'">Learn More</button>
+      <button class="btn btn-primary" onclick="location.hash='pricing'">See Pricing</button>
+      <button class="btn btn-outline" onclick="location.hash='signup'">Get Started</button>
+    </div>
+
+    <!-- Friction: ambiguous feature cards -->
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Blazing Fast</h3>
+        <p class="feature-text">Experience lightning-fast sync speeds that keep your team moving forward without delays or interruptions.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure by Default</h3>
+        <p class="feature-text">Enterprise-grade security with end-to-end encryption and compliance certifications for peace of mind.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <h3>Team Collaboration</h3>
+        <p class="feature-text">Real-time collaboration tools that make working together seamless, no matter where your team is located.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PRICING SECTION ===== -->
+  <section id="pricing" class="section">
+    <h2 class="section-title">Choose Your Plan</h2>
+    <div class="pricing-grid">
+      <!-- Free tier: de-emphasized -->
+      <div class="pricing-card pricing-free">
+        <h3 class="pricing-name">Starter</h3>
+        <div class="pricing-price">Free</div>
+        <ul class="pricing-features">
+          <li>5 GB Storage</li>
+          <li>2 Team Members</li>
+          <li>Basic Support</li>
+        </ul>
+        <!-- Friction: tiny, low-contrast CTA for free plan -->
+        <a href="#signup" class="btn-tiny">Start Free Trial</a>
+      </div>
+
+      <!-- Pro tier: attention-grabbing -->
+      <div class="pricing-card pricing-pro">
+        <div class="pricing-badge">Most Popular</div>
+        <h3 class="pricing-name">Professional</h3>
+        <div class="pricing-price">$29<span>/mo</span></div>
+        <ul class="pricing-features">
+          <li>100 GB Storage</li>
+          <li>10 Team Members</li>
+          <li>Priority Support</li>
+          <li>Advanced Analytics</li>
+        </ul>
+        <button class="btn btn-primary" onclick="location.hash='signup'">Choose Pro</button>
+      </div>
+
+      <!-- Enterprise tier -->
+      <div class="pricing-card">
+        <h3 class="pricing-name">Enterprise</h3>
+        <div class="pricing-price">Custom</div>
+        <ul class="pricing-features">
+          <li>Unlimited Storage</li>
+          <li>Unlimited Members</li>
+          <li>24/7 Support</li>
+          <li>Custom Integrations</li>
+        </ul>
+        <!-- Friction: "Contact Sales" instead of direct action -->
+        <button class="btn btn-outline" onclick="alert('Sales team will contact you within 48 hours.')">Contact Sales</button>
+      </div>
+    </div>
+
+    <!-- Friction: tiny "View full comparison" link -->
+    <p class="pricing-compare">
+      <a href="#" class="link-tiny">View full feature comparison →</a>
+    </p>
+  </section>
+
+  <!-- ===== SIGN UP FORM ===== -->
+  <section id="signup" class="section">
+    <h2 class="section-title">Create Your Account</h2>
+    <div class="form-container">
+      <form class="signup-form" onsubmit="handleSignup(event)">
+        <!-- Friction: placeholder-only labels (no visible label text) -->
+        <div class="form-field">
+          <input type="text" placeholder="Full Name" class="form-input" />
+        </div>
+        <div class="form-field">
+          <input type="email" placeholder="Work Email" class="form-input" />
+        </div>
+        <div class="form-field">
+          <input type="password" placeholder="Password (min 8 chars)" class="form-input" />
+        </div>
+        <div class="form-field">
+          <input type="password" placeholder="Confirm Password" class="form-input" />
+        </div>
+
+        <!-- Friction: confusing checkbox with dense legal text -->
+        <label class="checkbox-label">
+          <input type="checkbox" />
+          <span class="checkbox-text">I agree to the Terms of Service, Privacy Policy, Data Processing Agreement, and consent to receiving promotional communications from CloudSync Pro and its affiliates.</span>
+        </label>
+
+        <!-- Friction: Cancel and Back buttons near Submit, confusing placement -->
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" onclick="location.hash='home'">Cancel</button>
+          <button type="button" class="btn btn-outline" onclick="history.back()">Back</button>
+          <button type="submit" class="btn-submit">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Friction: modal popup that appears after 2s on pricing page -->
+  <div id="promo-modal" class="modal" style="display:none">
+    <div class="modal-content">
+      <h3>🎉 Special Offer!</h3>
+      <p>Get 50% off your first 3 months of CloudSync Pro!</p>
+      <p class="modal-fine-print">Offer valid for new customers only. Terms apply.</p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" onclick="closeModal()">Claim Offer</button>
+        <!-- Friction: tiny dismiss option -->
+        <a href="#" class="link-tiny" onclick="closeModal(); return false">No thanks</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Show promo modal 2s after visiting pricing section
+    let modalShown = false;
+    function checkPricingModal() {
+      if (location.hash === '#pricing' && !modalShown) {
+        modalShown = true;
+        setTimeout(() => {
+          document.getElementById('promo-modal').style.display = 'flex';
+        }, 2000);
+      }
+    }
+    window.addEventListener('hashchange', checkPricingModal);
+    checkPricingModal();
+
+    function closeModal() {
+      document.getElementById('promo-modal').style.display = 'none';
+    }
+
+    function handleSignup(e) {
+      e.preventDefault();
+      alert('Account created! (Demo)');
+    }
+
+    // Show home by default
+    if (!location.hash) location.hash = '#home';
+  </script>
+</body>
+</html>

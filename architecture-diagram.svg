@@ -1,0 +1,223 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 750" font-family="'Segoe UI', system-ui, -apple-system, sans-serif">
+  <defs>
+    <linearGradient id="gf" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#818cf8"/></linearGradient>
+    <linearGradient id="gb" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+    <linearGradient id="gc" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#059669"/><stop offset="100%" stop-color="#10b981"/></linearGradient>
+    <marker id="ah" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#6366f1"/></marker>
+    <marker id="ahg" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#059669"/></marker>
+    <marker id="ahr" markerWidth="10" markerHeight="7" refX="10" refY="3.5" orient="auto"><polygon points="0 0,10 3.5,0 7" fill="#dc2626"/></marker>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.1"/></filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="750" fill="#f8fafc" rx="12"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">PrismUX — System Architecture</text>
+  <text x="550" y="58" text-anchor="middle" font-size="12" fill="#64748b">AI-Powered UI Navigator Agent with Persona-Based Friction Detection</text>
+
+  <!-- ======================== FRONTEND LAYER ======================== -->
+  <rect x="40" y="75" width="1020" height="145" rx="14" fill="#6366f1" opacity="0.06" stroke="#6366f1" stroke-width="1.5"/>
+  <rect x="40" y="75" width="1020" height="4" rx="2" fill="url(#gf)"/>
+  <text x="60" y="100" font-size="13" font-weight="700" fill="#6366f1">FRONTEND</text>
+  <text x="155" y="100" font-size="10" fill="#818cf8">React 19  ·  TypeScript  ·  Tailwind CSS v4  ·  Vite 7  ·  Recharts</text>
+
+  <!-- Frontend boxes -->
+  <g filter="url(#shadow)">
+    <rect x="55" y="115" width="130" height="85" rx="10" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+    <text x="120" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#4338ca">Home</text>
+    <text x="120" y="158" text-anchor="middle" font-size="9" fill="#818cf8">URL + Goal Input</text>
+    <text x="120" y="172" text-anchor="middle" font-size="9" fill="#818cf8">Try Demo Button</text>
+    <text x="120" y="186" text-anchor="middle" font-size="9" fill="#818cf8">Persona Selector</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="205" y="115" width="160" height="85" rx="10" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+    <text x="285" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#4338ca">Session</text>
+    <text x="285" y="158" text-anchor="middle" font-size="9" fill="#818cf8">Screenshot Viewer</text>
+    <text x="285" y="172" text-anchor="middle" font-size="9" fill="#818cf8">ThoughtStream (PPAE)</text>
+    <text x="285" y="186" text-anchor="middle" font-size="9" fill="#818cf8">Overlay + Step Log</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="385" y="115" width="130" height="85" rx="10" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+    <text x="450" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#4338ca">Report</text>
+    <text x="450" y="158" text-anchor="middle" font-size="9" fill="#818cf8">Friction Score</text>
+    <text x="450" y="172" text-anchor="middle" font-size="9" fill="#818cf8">Step Timeline</text>
+    <text x="450" y="186" text-anchor="middle" font-size="9" fill="#818cf8">PDF / JSON Export</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="535" y="115" width="130" height="85" rx="10" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+    <text x="600" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#4338ca">Compare</text>
+    <text x="600" y="158" text-anchor="middle" font-size="9" fill="#818cf8">Multi-Persona Run</text>
+    <text x="600" y="172" text-anchor="middle" font-size="9" fill="#818cf8">Bar Charts</text>
+    <text x="600" y="186" text-anchor="middle" font-size="9" fill="#818cf8">Persona Scorecards</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="685" y="115" width="130" height="85" rx="10" fill="white" stroke="#c7d2fe" stroke-width="1"/>
+    <text x="750" y="142" text-anchor="middle" font-size="12" font-weight="700" fill="#4338ca">Architecture</text>
+    <text x="750" y="158" text-anchor="middle" font-size="9" fill="#818cf8">SVG Diagram</text>
+    <text x="750" y="172" text-anchor="middle" font-size="9" fill="#818cf8">Tech Highlights</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="835" y="115" width="210" height="85" rx="10" fill="#fef3c7" stroke="#fbbf24" stroke-width="1"/>
+    <text x="940" y="138" text-anchor="middle" font-size="11" font-weight="700" fill="#92400e">SSE Streaming (useSSE)</text>
+    <line x1="855" y1="148" x2="1025" y2="148" stroke="#fbbf24" stroke-width="0.5"/>
+    <text x="940" y="164" text-anchor="middle" font-size="9" fill="#a16207">NavigationStep events</text>
+    <text x="940" y="178" text-anchor="middle" font-size="9" fill="#a16207">ThoughtEvent events</text>
+    <text x="940" y="192" text-anchor="middle" font-size="9" fill="#a16207">Completion + Metrics</text>
+  </g>
+
+  <!-- Arrows Frontend → Backend -->
+  <line x1="285" y1="220" x2="285" y2="260" stroke="#6366f1" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="5 3"/>
+  <text x="295" y="244" font-size="9" fill="#6366f1" font-family="monospace">SSE</text>
+  <line x1="600" y1="220" x2="600" y2="260" stroke="#6366f1" stroke-width="2" marker-end="url(#ah)" stroke-dasharray="5 3"/>
+  <text x="610" y="244" font-size="9" fill="#6366f1" font-family="monospace">REST</text>
+
+  <!-- ======================== BACKEND LAYER ======================== -->
+  <rect x="40" y="265" width="1020" height="240" rx="14" fill="#2563eb" opacity="0.05" stroke="#2563eb" stroke-width="1.5"/>
+  <rect x="40" y="265" width="1020" height="4" rx="2" fill="url(#gb)"/>
+  <text x="60" y="290" font-size="13" font-weight="700" fill="#2563eb">BACKEND</text>
+  <text x="145" y="290" font-size="10" fill="#3b82f6">FastAPI  ·  Python 3.11  ·  Google ADK  ·  Playwright (Chromium)</text>
+
+  <!-- PPAE Loop Box -->
+  <g filter="url(#shadow)">
+    <rect x="55" y="305" width="440" height="180" rx="12" fill="white" stroke="#93c5fd" stroke-width="1.5"/>
+    <text x="275" y="330" text-anchor="middle" font-size="13" font-weight="800" fill="#1e40af">PPAE Navigation Loop</text>
+    <text x="275" y="345" text-anchor="middle" font-size="9" fill="#60a5fa">(Perceive → Plan → Act → Evaluate)</text>
+  </g>
+
+  <!-- PPAE Phase boxes -->
+  <rect x="75" y="360" width="90" height="55" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1"/>
+  <text x="120" y="383" text-anchor="middle" font-size="16">👁</text>
+  <text x="120" y="402" text-anchor="middle" font-size="10" font-weight="700" fill="#2563eb">Perceive</text>
+  <text x="120" y="413" text-anchor="middle" font-size="7" fill="#60a5fa">Gemini Vision</text>
+
+  <rect x="185" y="360" width="90" height="55" rx="8" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
+  <text x="230" y="383" text-anchor="middle" font-size="16">🧠</text>
+  <text x="230" y="402" text-anchor="middle" font-size="10" font-weight="700" fill="#7c3aed">Plan</text>
+  <text x="230" y="413" text-anchor="middle" font-size="7" fill="#a78bfa">Action + Confidence</text>
+
+  <rect x="295" y="360" width="90" height="55" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1"/>
+  <text x="340" y="383" text-anchor="middle" font-size="16">🖱️</text>
+  <text x="340" y="402" text-anchor="middle" font-size="10" font-weight="700" fill="#2563eb">Act</text>
+  <text x="340" y="413" text-anchor="middle" font-size="7" fill="#60a5fa">Playwright</text>
+
+  <rect x="405" y="360" width="90" height="55" rx="8" fill="#dcfce7" stroke="#059669" stroke-width="1"/>
+  <text x="450" y="383" text-anchor="middle" font-size="16">✅</text>
+  <text x="450" y="402" text-anchor="middle" font-size="10" font-weight="700" fill="#059669">Evaluate</text>
+  <text x="450" y="413" text-anchor="middle" font-size="7" fill="#34d399">Friction Check</text>
+
+  <!-- PPAE Arrows -->
+  <line x1="167" y1="387" x2="183" y2="387" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="277" y1="387" x2="293" y2="387" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ah)"/>
+  <line x1="387" y1="387" x2="403" y2="387" stroke="#6366f1" stroke-width="1.5" marker-end="url(#ah)"/>
+
+  <!-- Loop back arrow -->
+  <path d="M 460 420 Q 460 460 275 460 Q 75 460 75 420" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#ah)"/>
+  <text x="275" y="475" text-anchor="middle" font-size="8" fill="#6366f1" font-weight="600" font-family="monospace">loop until goal achieved / max 30 steps</text>
+
+  <!-- Stuck Detection -->
+  <g filter="url(#shadow)">
+    <rect x="110" y="430" width="100" height="32" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+    <text x="160" y="451" text-anchor="middle" font-size="9" font-weight="600" fill="#dc2626">Stuck Detector</text>
+  </g>
+  <!-- Safety Guard -->
+  <g filter="url(#shadow)">
+    <rect x="280" y="430" width="100" height="32" rx="6" fill="#fef2f2" stroke="#dc2626" stroke-width="1"/>
+    <text x="330" y="451" text-anchor="middle" font-size="9" font-weight="600" fill="#dc2626">Safety Guard</text>
+  </g>
+
+  <!-- Backend Services (right side) -->
+  <g filter="url(#shadow)">
+    <rect x="520" y="305" width="250" height="65" rx="10" fill="white" stroke="#2563eb" stroke-width="1.5"/>
+    <text x="645" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">Google ADK Agent</text>
+    <text x="645" y="346" text-anchor="middle" font-size="9" fill="#60a5fa">LlmAgent + LoopAgent + FunctionTools</text>
+    <text x="645" y="358" text-anchor="middle" font-size="9" fill="#60a5fa">Alternative engine via ?engine=adk</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="790" y="305" width="250" height="65" rx="10" fill="white" stroke="#dc2626" stroke-width="1.5"/>
+    <text x="915" y="330" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">Gemini 2.0 Flash</text>
+    <text x="915" y="346" text-anchor="middle" font-size="9" fill="#f87171">Multimodal Vision (screenshot → JSON)</text>
+    <text x="915" y="358" text-anchor="middle" font-size="9" fill="#f87171">Structured Output w/ JSON Schema</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="520" y="385" width="250" height="65" rx="10" fill="white" stroke="#7c3aed" stroke-width="1.5"/>
+    <text x="645" y="410" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">Persona Engine</text>
+    <text x="645" y="426" text-anchor="middle" font-size="9" fill="#a78bfa">4 personas: Elderly · Low-Vision</text>
+    <text x="645" y="438" text-anchor="middle" font-size="9" fill="#a78bfa">Non-Native Speaker · Impatient User</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="790" y="385" width="250" height="65" rx="10" fill="white" stroke="#0891b2" stroke-width="1.5"/>
+    <text x="915" y="410" text-anchor="middle" font-size="12" font-weight="700" fill="#0891b2">Playwright Browser</text>
+    <text x="915" y="426" text-anchor="middle" font-size="9" fill="#22d3ee">Headless Chromium · 1280×720</text>
+    <text x="915" y="438" text-anchor="middle" font-size="9" fill="#22d3ee">Click · Type · Scroll · Screenshot</text>
+  </g>
+
+  <!-- Arrows: Gemini ↔ PPAE -->
+  <line x1="790" y1="337" x2="497" y2="380" stroke="#dc2626" stroke-width="1.5" marker-end="url(#ahr)" stroke-dasharray="4 2"/>
+
+  <!-- Arrows Backend → Cloud -->
+  <line x1="275" y1="505" x2="275" y2="540" stroke="#059669" stroke-width="2" marker-end="url(#ahg)" stroke-dasharray="5 3"/>
+  <line x1="645" y1="505" x2="645" y2="540" stroke="#059669" stroke-width="2" marker-end="url(#ahg)" stroke-dasharray="5 3"/>
+  <line x1="915" y1="505" x2="915" y2="540" stroke="#059669" stroke-width="2" marker-end="url(#ahg)" stroke-dasharray="5 3"/>
+
+  <!-- ======================== GOOGLE CLOUD LAYER ======================== -->
+  <rect x="40" y="545" width="1020" height="180" rx="14" fill="#059669" opacity="0.05" stroke="#059669" stroke-width="1.5"/>
+  <rect x="40" y="545" width="1020" height="4" rx="2" fill="url(#gc)"/>
+  <text x="60" y="572" font-size="13" font-weight="700" fill="#059669">GOOGLE CLOUD PLATFORM</text>
+  <text x="285" y="572" font-size="10" fill="#34d399">Deployed on Cloud Run  ·  Managed Services</text>
+
+  <!-- Cloud services -->
+  <g filter="url(#shadow)">
+    <rect x="55" y="590" width="160" height="115" rx="10" fill="white" stroke="#059669" stroke-width="1.5"/>
+    <text x="135" y="620" text-anchor="middle" font-size="22">☁️</text>
+    <text x="135" y="642" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Cloud Run</text>
+    <text x="135" y="658" text-anchor="middle" font-size="9" fill="#34d399">Container hosting</text>
+    <text x="135" y="672" text-anchor="middle" font-size="9" fill="#34d399">Auto-scaling</text>
+    <text x="135" y="686" text-anchor="middle" font-size="9" fill="#34d399">Docker deployment</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="235" y="590" width="160" height="115" rx="10" fill="white" stroke="#059669" stroke-width="1.5"/>
+    <text x="315" y="620" text-anchor="middle" font-size="22">🗄️</text>
+    <text x="315" y="642" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Firestore</text>
+    <text x="315" y="658" text-anchor="middle" font-size="9" fill="#34d399">Session persistence</text>
+    <text x="315" y="672" text-anchor="middle" font-size="9" fill="#34d399">Report storage</text>
+    <text x="315" y="686" text-anchor="middle" font-size="9" fill="#34d399">NoSQL document DB</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="415" y="590" width="160" height="115" rx="10" fill="white" stroke="#059669" stroke-width="1.5"/>
+    <text x="495" y="620" text-anchor="middle" font-size="22">📸</text>
+    <text x="495" y="642" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Cloud Storage</text>
+    <text x="495" y="658" text-anchor="middle" font-size="9" fill="#34d399">Screenshot archive</text>
+    <text x="495" y="672" text-anchor="middle" font-size="9" fill="#34d399">Step evidence (GCS)</text>
+    <text x="495" y="686" text-anchor="middle" font-size="9" fill="#34d399">Base64 → PNG blobs</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="595" y="590" width="160" height="115" rx="10" fill="white" stroke="#dc2626" stroke-width="1.5"/>
+    <text x="675" y="620" text-anchor="middle" font-size="22">✨</text>
+    <text x="675" y="642" text-anchor="middle" font-size="12" font-weight="700" fill="#dc2626">Gemini API</text>
+    <text x="675" y="658" text-anchor="middle" font-size="9" fill="#f87171">2.0 Flash (vision + lang)</text>
+    <text x="675" y="672" text-anchor="middle" font-size="9" fill="#f87171">Structured JSON output</text>
+    <text x="675" y="686" text-anchor="middle" font-size="9" fill="#f87171">google-genai SDK</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="775" y="590" width="160" height="115" rx="10" fill="white" stroke="#059669" stroke-width="1.5"/>
+    <text x="855" y="620" text-anchor="middle" font-size="22">📊</text>
+    <text x="855" y="642" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Cloud Logging</text>
+    <text x="855" y="658" text-anchor="middle" font-size="9" fill="#34d399">Observability</text>
+    <text x="855" y="672" text-anchor="middle" font-size="9" fill="#34d399">Error tracking</text>
+    <text x="855" y="686" text-anchor="middle" font-size="9" fill="#34d399">Performance metrics</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="955" y="590" width="90" height="115" rx="10" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+    <text x="1000" y="620" text-anchor="middle" font-size="22">🌐</text>
+    <text x="1000" y="642" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">Demo</text>
+    <text x="1000" y="642" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">Demo</text>
+    <text x="1000" y="655" text-anchor="middle" font-size="10" font-weight="700" fill="#92400e">Site</text>
+    <text x="1000" y="672" text-anchor="middle" font-size="8" fill="#a16207">nginx</text>
+    <text x="1000" y="684" text-anchor="middle" font-size="8" fill="#a16207">:8080</text>
+    <text x="1000" y="696" text-anchor="middle" font-size="7" fill="#a16207">Friction</text>
+  </g>
+
+  <!-- Footer -->
+  <text x="550" y="740" text-anchor="middle" font-size="10" fill="#94a3b8">PrismUX  ·  Gemini Live Agent Challenge 2026  ·  UI Navigator Category</text>
+</svg>
